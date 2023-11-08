@@ -17,7 +17,7 @@ library
     import:           warnings
     exposed-modules:  Text.Pandoc.Builder.Monadic
     other-modules:    Text.Pandoc.Builder.Monadic.Internal
-    build-depends:    base ^>=4.17.2.0
+    build-depends:    base >=4.9.2.0 && < 5
                     , containers
                     , dlist ^>= 1.0
                     , mtl
