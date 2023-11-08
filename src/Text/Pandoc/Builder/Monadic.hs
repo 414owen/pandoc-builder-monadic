@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -65,13 +66,17 @@ module Text.Pandoc.Builder.Monadic
   , table
   , simpleTable
   , tableWith
+#if MIN_VERSION_pandoc_types(1,23,0)
   , figure
   , figureWith
+#endif
   , caption
   , simpleCaption
   , emptyCaption
+#if MIN_VERSION_pandoc_types(1,22,1)
   , simpleFigureWith
   , simpleFigure
+#endif
   , divWith
 
   -- * Table processing
@@ -297,11 +302,13 @@ tableWith = (((((buildMany .) .) .) .) .) . B.tableWith
 simpleTable :: [Builder Block] -> [[Builder Block]] -> Builder Block
 simpleTable headers rows = buildMany $ B.simpleTable (fmap runToMany headers) (fmap runToMany <$> rows)
 
+#if MIN_VERSION_pandoc_types(1,23,0)
 figure :: B.Caption -> Builder Block -> Builder Block
 figure = figureWith B.nullAttr
 
 figureWith :: B.Attr -> B.Caption -> Builder Block -> Builder Block
 figureWith attr capt = tellOne . B.Figure attr capt . runToList
+#endif
 
 caption :: Maybe B.ShortCaption -> Builder Block -> B.Caption
 caption x = B.Caption x . runToList
@@ -312,11 +319,13 @@ simpleCaption = caption Nothing
 emptyCaption :: B.Caption
 emptyCaption = simpleCaption $ pure ()
 
+#if MIN_VERSION_pandoc_types(1,22,1)
 simpleFigureWith :: B.Attr -> Builder Inline -> Text -> Text -> Builder Block
 simpleFigureWith attr = ((buildMany .) .) . B.simpleFigureWith attr . runToMany
 
 simpleFigure :: Builder Inline -> Text -> Text -> Builder Block
 simpleFigure = simpleFigureWith B.nullAttr
+#endif
 
 divWith :: B.Attr -> Builder Block -> Builder Block
 divWith attr = tellOne . B.Div attr . runToList
