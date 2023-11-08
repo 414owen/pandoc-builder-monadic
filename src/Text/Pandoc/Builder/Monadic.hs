@@ -4,7 +4,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Text.Pandoc.Builder.Monadic
-  ( Builder
+  ( module Text.Pandoc.Definition
 
   -- * Top-level
   , doc
