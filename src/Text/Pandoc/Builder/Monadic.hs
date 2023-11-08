@@ -4,7 +4,10 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Text.Pandoc.Builder.Monadic
-  ( doc
+  ( Builder
+
+  -- * Top-level
+  , doc
   , B.setTitle
   , B.setAuthors
   , B.setDate
