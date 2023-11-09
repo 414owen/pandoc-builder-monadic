@@ -89,16 +89,14 @@ module Text.Pandoc.Builder.Monadic.Verbatim
   ) where
 
 import Control.Arrow               ((***))
-import Control.Monad.Writer.Strict (Writer)
-import Data.DList                  (DList)
 import Data.Text                   (Text)
 
 import Text.Pandoc.Definition
-import Text.Pandoc.Builder (Inline, Block, Pandoc)
 import Data.String (IsString(..))
 
 import Text.Pandoc.Builder.Monadic.Internal
-  ( buildMany
+  ( Builder
+  , buildMany
   , runToMany
   , runToList
   , tellOne
@@ -106,8 +104,6 @@ import Text.Pandoc.Builder.Monadic.Internal
 
 import qualified Data.Text           as Text
 import qualified Text.Pandoc.Builder as B
-
-type Builder el = Writer (DList el) ()
 
 instance IsString (Builder Inline) where
   fromString = str . Text.pack

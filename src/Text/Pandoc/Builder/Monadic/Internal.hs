@@ -1,8 +1,12 @@
-{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-{-# OPTIONS_GHC -Wno-orphans #-}
-
-module Text.Pandoc.Builder.Monadic.Internal where
+module Text.Pandoc.Builder.Monadic.Internal
+  ( Builder
+  , buildMany
+  , runToList
+  , runToMany
+  , tellOne
+  ) where
 
 import Control.Monad.Writer.Strict (Writer, execWriter, tell)
 import Data.DList                  (DList)
@@ -12,13 +16,33 @@ import Text.Pandoc.Builder         (Inline)
 import qualified Text.Pandoc.Builder         as B
 import qualified Data.DList                  as DList
 
-type Builder el = Writer (DList el) ()
+newtype BuilderM el a = Builder { unBuilder :: Writer (DList el) a }
+
+instance Functor (BuilderM el) where
+  fmap f = Builder . fmap f . unBuilder
+
+instance Applicative (BuilderM el) where
+  pure a = Builder $ pure a
+  Builder f <*> Builder a = Builder $ f <*> a
+
+instance Monad (BuilderM el) where
+  Builder a >>= f = Builder $ do
+    a' <- a
+    unBuilder $ f a'
+
+instance Semigroup (BuilderM el a) where
+  Builder a <> Builder b = Builder $ a >> b
+
+instance Monoid a => Monoid (BuilderM el a) where
+  mempty = Builder $ pure mempty
+
+type Builder el = BuilderM el ()
 
 runToList :: Builder el -> [el]
-runToList = DList.toList . execWriter
+runToList = DList.toList . execWriter . unBuilder
 
 runToMany :: Builder a -> B.Many a
-runToMany = B.fromList . DList.toList . execWriter
+runToMany = B.fromList . DList.toList . execWriter . unBuilder
 
 type Author = Builder Inline
 
@@ -29,7 +53,7 @@ instance B.ToMetaValue (Builder Author) where
   toMetaValue = B.MetaList . map B.toMetaValue . runToList
 
 buildMany :: B.Many a -> Builder a
-buildMany = traverse_ (tell . pure)
+buildMany = Builder . traverse_ (tell . pure)
 
 tellOne :: a -> Builder a
-tellOne = tell . pure
+tellOne = Builder . tell . pure
