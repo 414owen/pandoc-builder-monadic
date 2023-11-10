@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 
 module Text.Pandoc.Builder.Monadic.Internal
   ( Builder
@@ -15,10 +14,12 @@ module Text.Pandoc.Builder.Monadic.Internal
 import Control.Monad.Writer.Strict (Writer, execWriter, tell)
 import Data.DList                  (DList)
 import Data.Foldable               (traverse_)
+import Data.Text                   (Text)
 import Text.Pandoc.Builder         (Inline)
 
-import qualified Text.Pandoc.Builder         as B
 import qualified Data.DList                  as DList
+import qualified Text.Pandoc.Builder         as B
+import qualified Data.Text                   as T
 
 newtype BuilderM el a = Builder { unBuilder :: Writer (DList el) a }
 
@@ -82,3 +83,10 @@ instance Build a (B.Many a) where
 instance Build el () where
   buildToList _ = []
   buildToMany _ = buildToMany ([] :: [el])
+
+instance Build Inline Text where
+  buildToList s = [B.Str s]
+
+instance Build Inline String where
+  buildToList = buildToList . T.pack
+  buildToMany = buildToMany . T.pack
