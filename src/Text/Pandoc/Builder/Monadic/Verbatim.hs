@@ -1,16 +1,16 @@
-{-# LANGUAGE CPP               #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE CPP                   #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts      #-}
 
 {-# OPTIONS_GHC -Wno-orphans #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- | This module exports a 1:1 monadic version of pandoc-types' Text.Pandoc.Builder.
 
 module Text.Pandoc.Builder.Monadic.Verbatim
   ( module Text.Pandoc.Definition
   , Builder
+  , Build(..)
 
   -- * Top-level
   , doc
@@ -95,24 +95,43 @@ import Control.Arrow               ((***))
 import Data.Text                   (Text)
 
 import Text.Pandoc.Definition
-import Data.String (IsString(..))
 
 import Text.Pandoc.Builder.Monadic.Internal
   ( Builder
-  , Build(..)
+  , runToList
   , buildMany
   , tellOne
   )
 
-import qualified Data.Text           as Text
 import qualified Text.Pandoc.Builder as B
+import qualified Data.Text           as Text
 
 
-instance IsString (Builder Inline) where
-  fromString = str . Text.pack
+class Build el a where
+  buildToList :: a -> [el]
 
-instance IsString (Builder Block) where
-  fromString = plain . str . Text.pack
+  buildToMany :: a -> B.Many el
+  buildToMany = B.fromList . buildToList
+
+instance Build a (Builder a) where
+  buildToList = runToList
+
+instance Build a [a] where
+  buildToList = id
+
+instance Build a (B.Many a) where
+  buildToList = B.toList
+  buildToMany = id
+
+instance Build el () where
+  buildToList _ = []
+
+instance Build Inline Text where
+  buildToList s = [B.Str s]
+
+instance Build Inline String where
+  buildToList = buildToList . Text.pack
+  buildToMany = buildToMany . Text.pack
 
 
 doc :: Build Block a => a -> Pandoc

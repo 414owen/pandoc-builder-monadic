@@ -4,7 +4,6 @@
 
 module Text.Pandoc.Builder.Monadic.Internal
   ( Builder
-  , Build(..)
   , buildMany
   , runToList
   , runToMany
@@ -14,12 +13,10 @@ module Text.Pandoc.Builder.Monadic.Internal
 import Control.Monad.Writer.Strict (Writer, execWriter, tell)
 import Data.DList                  (DList)
 import Data.Foldable               (traverse_)
-import Data.Text                   (Text)
 import Text.Pandoc.Builder         (Inline)
 
 import qualified Data.DList                  as DList
 import qualified Text.Pandoc.Builder         as B
-import qualified Data.Text                   as T
 
 newtype BuilderM el a = Builder { unBuilder :: Writer (DList el) a }
 
@@ -63,30 +60,3 @@ tellOne = Builder . tell . pure
 
 buildMany :: B.Many a -> Builder a
 buildMany = Builder . traverse_ (tell . pure)
-
-class Build el a where
-  buildToList :: a -> [el]
-
-  buildToMany :: a -> B.Many el
-  buildToMany = B.fromList . buildToList
-
-instance Build a (Builder a) where
-  buildToList = runToList
-
-instance Build a [a] where
-  buildToList = id
-
-instance Build a (B.Many a) where
-  buildToList = B.toList
-  buildToMany = id
-
-instance Build el () where
-  buildToList _ = []
-  buildToMany _ = buildToMany ([] :: [el])
-
-instance Build Inline Text where
-  buildToList s = [B.Str s]
-
-instance Build Inline String where
-  buildToList = buildToList . T.pack
-  buildToMany = buildToMany . T.pack

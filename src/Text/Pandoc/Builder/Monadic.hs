@@ -17,7 +17,6 @@ import Text.Pandoc.Builder.Monadic.Verbatim hiding
   , simpleFigureWith
   )
 import Text.Pandoc.Builder.Monadic.Veneer
-import Text.Pandoc.Builder.Monadic.Internal (Build(..))
 
 import qualified Text.Pandoc.Builder.Monadic.Verbatim as V
 
