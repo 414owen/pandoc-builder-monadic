@@ -1,11 +1,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Text.Pandoc.Builder.Monadic.Internal
-  ( Builder
+  ( BuilderM(..)
+  , Builder
   , buildMany
   , runToList
+  , runToDList
   , runToMany
   , tellOne
+  , tellAll
   ) where
 
 import Control.Monad.Writer.Strict (Writer, execWriter, tell)
@@ -38,12 +41,6 @@ instance Monoid a => Monoid (BuilderM el a) where
 
 type Builder el = BuilderM el ()
 
-runToList :: Builder el -> [el]
-runToList = DList.toList . execWriter . unBuilder
-
-runToMany :: Builder a -> B.Many a
-runToMany = B.fromList . DList.toList . execWriter . unBuilder
-
 type Author = Builder Inline
 
 instance B.ToMetaValue (Builder Inline) where
@@ -52,8 +49,20 @@ instance B.ToMetaValue (Builder Inline) where
 instance B.ToMetaValue (Builder Author) where
   toMetaValue = B.MetaList . map B.toMetaValue . runToList
 
+runToDList :: Builder el -> DList el
+runToDList = execWriter . unBuilder
+
+runToList :: Builder el -> [el]
+runToList = DList.toList . runToDList
+
+runToMany :: Builder a -> B.Many a
+runToMany = B.fromList . DList.toList . execWriter . unBuilder
+
 buildMany :: B.Many a -> Builder a
 buildMany = Builder . traverse_ (tell . pure)
 
 tellOne :: a -> Builder a
 tellOne = Builder . tell . pure
+
+tellAll :: DList a -> Builder a
+tellAll = Builder . tell

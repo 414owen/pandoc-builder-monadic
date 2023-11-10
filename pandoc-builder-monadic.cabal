@@ -18,7 +18,8 @@ library
     exposed-modules:  Text.Pandoc.Builder.Monadic
                     , Text.Pandoc.Builder.Monadic.Veneer
                     , Text.Pandoc.Builder.Monadic.Verbatim
-    other-modules:    Text.Pandoc.Builder.Monadic.Internal
+                    , Text.Pandoc.Builder.Monadic.Utils
+                    , Text.Pandoc.Builder.Monadic.Internal
     build-depends:    base >=4.9.2.0 && < 5
                     , containers
                     , dlist ^>= 1.0
