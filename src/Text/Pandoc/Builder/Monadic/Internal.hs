@@ -1,7 +1,11 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Text.Pandoc.Builder.Monadic.Internal
   ( Builder
+  , Build(..)
   , buildMany
   , runToList
   , runToMany
@@ -52,8 +56,29 @@ instance B.ToMetaValue (Builder Inline) where
 instance B.ToMetaValue (Builder Author) where
   toMetaValue = B.MetaList . map B.toMetaValue . runToList
 
+tellOne :: a -> Builder a
+tellOne = Builder . tell . pure
+
+
 buildMany :: B.Many a -> Builder a
 buildMany = Builder . traverse_ (tell . pure)
 
-tellOne :: a -> Builder a
-tellOne = Builder . tell . pure
+class Build el a where
+  buildToList :: a -> [el]
+
+  buildToMany :: a -> B.Many el
+  buildToMany = B.fromList . buildToList
+
+instance Build a (Builder a) where
+  buildToList = runToList
+
+instance Build a [a] where
+  buildToList = id
+
+instance Build a (B.Many a) where
+  buildToList = B.toList
+  buildToMany = id
+
+instance Build el () where
+  buildToList _ = []
+  buildToMany _ = buildToMany ([] :: [el])

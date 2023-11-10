@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 -- | This module exports an API similar to pandoc-types' Text.Pandoc.Builder, but
 -- with the `simple*` versions as the default versions, and with a few extras
 -- from Text.Pandoc.Builder.Monadic.Veneer.
@@ -16,16 +17,17 @@ import Text.Pandoc.Builder.Monadic.Verbatim hiding
   , simpleFigureWith
   )
 import Text.Pandoc.Builder.Monadic.Veneer
+import Text.Pandoc.Builder.Monadic.Internal (Build(..))
 
 import qualified Text.Pandoc.Builder.Monadic.Verbatim as V
 
-cell :: Builder Block -> Cell
+cell :: Build Block a => a -> Cell
 cell = V.simpleCell
 
-cell' :: Alignment -> RowSpan -> ColSpan -> Builder Block -> Cell
+cell' :: Build Block a => Alignment -> RowSpan -> ColSpan -> a -> Cell
 cell' = V.cell
 
-table :: [Builder Block] -> [[Builder Block]] -> Builder Block
+table :: (Build Block a, Build Block b) => [a] -> [[b]] -> Builder Block
 table = V.simpleTable
 
 table'
@@ -37,16 +39,16 @@ table'
   -> Builder Block
 table' = V.table
 
-caption :: Builder Block -> Caption
+caption :: Build Block a => a -> Caption
 caption = V.simpleCaption
 
-caption' :: Maybe ShortCaption -> Builder Block -> Caption
+caption' :: Build Block a => Maybe ShortCaption -> a -> Caption
 caption' = V.caption
 
-imgFigure :: Builder Inline -> Text -> Text
+imgFigure :: Build Inline a => a -> Text -> Text
                   -> Builder Block
 imgFigure = V.simpleFigure
 
-imgFigureWith :: Attr -> Builder Inline -> Text -> Text -> Builder Block
+imgFigureWith :: Build Inline a => Attr -> a -> Text -> Text -> Builder Block
 imgFigureWith = V.simpleFigureWith
 

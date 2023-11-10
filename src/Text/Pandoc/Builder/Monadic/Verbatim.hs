@@ -2,6 +2,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 {-# OPTIONS_GHC -Wno-orphans #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- | This module exports a 1:1 monadic version of pandoc-types' Text.Pandoc.Builder.
 
@@ -96,14 +99,14 @@ import Data.String (IsString(..))
 
 import Text.Pandoc.Builder.Monadic.Internal
   ( Builder
+  , Build(..)
   , buildMany
-  , runToMany
-  , runToList
   , tellOne
   )
 
 import qualified Data.Text           as Text
 import qualified Text.Pandoc.Builder as B
+
 
 instance IsString (Builder Inline) where
   fromString = str . Text.pack
@@ -111,8 +114,9 @@ instance IsString (Builder Inline) where
 instance IsString (Builder Block) where
   fromString = plain . str . Text.pack
 
-doc :: Builder Block -> Pandoc
-doc = B.Pandoc mempty . runToList
+
+doc :: Build Block a => a -> Pandoc
+doc = B.Pandoc mempty . buildToList
 
 text :: Text -> Builder Inline
 text = buildMany . B.text
@@ -120,37 +124,37 @@ text = buildMany . B.text
 str :: Text -> Builder Inline
 str = tellOne . B.Str
 
-liftWrapper :: ([a] -> b) -> Builder a -> Builder b
-liftWrapper f = tellOne . f . runToList
+liftWrapper :: Build el a => ([el] -> b) -> a -> Builder b
+liftWrapper f = tellOne . f . buildToList
 
-emph :: Builder Inline -> Builder Inline
+emph :: Build Inline a => a -> Builder Inline
 emph = liftWrapper B.Emph
 
-underline :: Builder Inline -> Builder Inline
+underline :: Build Inline a => a -> Builder Inline
 underline = liftWrapper B.Underline
 
-strong :: Builder Inline -> Builder Inline
+strong :: Build Inline a => a -> Builder Inline
 strong = liftWrapper B.Strong
 
-strikeout :: Builder Inline -> Builder Inline
+strikeout :: Build Inline a => a -> Builder Inline
 strikeout = liftWrapper B.Strikeout
 
-superscript :: Builder Inline -> Builder Inline
+superscript :: Build Inline a => a -> Builder Inline
 superscript = liftWrapper B.Superscript
 
-subscript :: Builder Inline -> Builder Inline
+subscript :: Build Inline a => a -> Builder Inline
 subscript = liftWrapper B.Subscript
 
-smallcaps :: Builder Inline -> Builder Inline
+smallcaps :: Build Inline a => a -> Builder Inline
 smallcaps = liftWrapper B.SmallCaps
 
-singleQuoted :: Builder Inline -> Builder Inline
+singleQuoted :: Build Inline a => a -> Builder Inline
 singleQuoted = liftWrapper $ B.Quoted B.SingleQuote
 
-doubleQuoted :: Builder Inline -> Builder Inline
+doubleQuoted :: Build Inline a => a -> Builder Inline
 doubleQuoted = liftWrapper $ B.Quoted B.DoubleQuote
 
-cite :: [B.Citation] -> Builder Inline -> Builder Inline
+cite :: Build Inline a => [B.Citation] -> a -> Builder Inline
 cite citations = liftWrapper $ B.Cite citations
 
 codeWith :: B.Attr -> Text -> Builder Inline
@@ -177,37 +181,37 @@ displayMath = tellOne . B.Math B.DisplayMath
 rawInline :: Text -> Text -> Builder Inline
 rawInline format = tellOne . B.RawInline (B.Format format)
 
-link :: Text -> Text -> Builder Inline -> Builder Inline
+link :: Build Inline a => Text -> Text -> a -> Builder Inline
 link = linkWith B.nullAttr
 
-linkWith :: B.Attr -> Text -> Text -> Builder Inline -> Builder Inline
-linkWith attr url title x = tellOne $ B.Link attr (runToList x) (url, title)
+linkWith :: Build Inline a => B.Attr -> Text -> Text -> a -> Builder Inline
+linkWith attr url title x = tellOne $ B.Link attr (buildToList x) (url, title)
 
-image :: Text -> Text -> Builder Inline -> Builder Inline
+image :: Build Inline a => Text -> Text -> a -> Builder Inline
 image = imageWith B.nullAttr
 
-imageWith :: B.Attr -> Text -> Text -> Builder Inline -> Builder Inline
-imageWith attr url title x = tellOne $ B.Image attr (runToList x) (url, title)
+imageWith :: Build Inline a => B.Attr -> Text -> Text -> a -> Builder Inline
+imageWith attr url title x = tellOne $ B.Image attr (buildToList x) (url, title)
 
-note :: Builder B.Block -> Builder Inline
+note :: Build Block a => a -> Builder Inline
 note = liftWrapper B.Note
 
-spanWith :: B.Attr -> Builder Inline -> Builder Inline
+spanWith :: Build Inline a => B.Attr -> a -> Builder Inline
 spanWith attr = liftWrapper $ B.Span attr
 
-trimInlines :: Builder Inline -> Builder Inline
-trimInlines = buildMany . B.trimInlines . runToMany
+trimInlines :: Build Inline a => a -> Builder Inline
+trimInlines = buildMany . B.trimInlines . buildToMany
 
 -- Block list builders
 
-para :: Builder Inline -> Builder Block
+para :: Build Inline a => a -> Builder Block
 para = liftWrapper B.Para
 
-plain :: Builder Inline -> Builder Block
-plain = buildMany . B.plain . runToMany
+plain :: Build Inline a => a -> Builder Block
+plain = buildMany . B.plain . buildToMany
 
-lineBlock :: [Builder Inline] -> Builder Block
-lineBlock = tellOne . B.LineBlock . fmap runToList
+lineBlock :: Build Inline a => [a] -> Builder Block
+lineBlock = tellOne . B.LineBlock . fmap buildToList
 
 codeBlock :: Text -> Builder Block
 codeBlock = codeBlockWith B.nullAttr
@@ -218,52 +222,54 @@ codeBlockWith attrs = tellOne . B.CodeBlock attrs
 rawBlock :: Text -> Text -> Builder Block
 rawBlock format = tellOne . B.RawBlock (B.Format format)
 
-blockQuote :: Builder Block -> Builder Block
+blockQuote :: Build Block a => a -> Builder Block
 blockQuote = liftWrapper B.BlockQuote
 
-orderedList :: [Builder Block] -> Builder Block
+orderedList :: Build Block a => [a] -> Builder Block
 orderedList = orderedListWith (1, B.DefaultStyle, B.DefaultDelim)
 
-orderedListWith :: B.ListAttributes -> [Builder Block] -> Builder Block
-orderedListWith attrs = tellOne . B.OrderedList attrs . fmap runToList
+orderedListWith :: Build Block a => B.ListAttributes -> [a] -> Builder Block
+orderedListWith attrs = tellOne . B.OrderedList attrs . fmap buildToList
 
-bulletList :: [Builder Block] -> Builder Block
-bulletList = tellOne . B.BulletList . fmap runToList
+bulletList :: Build Block a => [a] -> Builder Block
+bulletList = tellOne . B.BulletList . fmap buildToList
 
-definitionList :: [(Builder Inline, [Builder Block])] -> Builder Block
-definitionList = tellOne . B.DefinitionList . fmap (runToList *** fmap runToList)
+definitionList :: (Build Inline a, Build Block b) => [(a, [b])] -> Builder Block
+definitionList = tellOne . B.DefinitionList . fmap (buildToList *** fmap buildToList)
 
-header :: Int -> Builder Inline -> Builder Block
+header :: Build Inline a => Int -> a -> Builder Block
 header = headerWith B.nullAttr
 
-headerWith :: B.Attr -> Int -> Builder Inline -> Builder Block
+headerWith :: Build Inline a => B.Attr -> Int -> a -> Builder Block
 headerWith attr level = liftWrapper $ B.Header level attr
 
 horizontalRule :: Builder Block
 horizontalRule = tellOne B.HorizontalRule
 
-simpleCell :: Builder Block -> B.Cell
+simpleCell :: Build Block a => a -> B.Cell
 simpleCell = cell B.AlignDefault 1 1
 
 cell
-  :: B.Alignment
+  :: Build Block a
+  => B.Alignment
   -> B.RowSpan
   -> B.ColSpan
-  -> Builder Block
+  -> a
   -> B.Cell
 cell = cellWith B.nullAttr
 
 cellWith
-  :: B.Attr
+  :: Build Block a
+  => B.Attr
   -> B.Alignment
   -> B.RowSpan
   -> B.ColSpan
-  -> Builder Block
+  -> a
   -> B.Cell
-cellWith attrs align rowspan colspan = B.Cell attrs align rowspan colspan . runToList
+cellWith attrs align rowspan colspan = B.Cell attrs align rowspan colspan . buildToList
 
 emptyCell :: B.Cell
-emptyCell = simpleCell $ pure ()
+emptyCell = simpleCell ()
 
 table :: B.Caption
       -> [B.ColSpec]
@@ -282,33 +288,33 @@ tableWith :: B.Attr
           -> Builder Block
 tableWith = (((((buildMany .) .) .) .) .) . B.tableWith
 
-simpleTable :: [Builder Block] -> [[Builder Block]] -> Builder Block
-simpleTable headers rows = buildMany $ B.simpleTable (fmap runToMany headers) (fmap runToMany <$> rows)
+simpleTable :: (Build Block a, Build Block b) => [a] -> [[b]] -> Builder Block
+simpleTable headers rows = buildMany $ B.simpleTable (fmap buildToMany headers) (fmap buildToMany <$> rows)
 
 #if MIN_VERSION_pandoc_types(1,23,0)
-figure :: B.Caption -> Builder Block -> Builder Block
+figure :: Build Block a => B.Caption -> a -> Builder Block
 figure = figureWith B.nullAttr
 
-figureWith :: B.Attr -> B.Caption -> Builder Block -> Builder Block
+figureWith :: Build Block a => B.Attr -> B.Caption -> a -> Builder Block
 figureWith attr capt = liftWrapper $ B.Figure attr capt
 #endif
 
-caption :: Maybe B.ShortCaption -> Builder Block -> B.Caption
-caption x = B.Caption x . runToList
+caption :: Build Block a => Maybe B.ShortCaption -> a -> B.Caption
+caption x = B.Caption x . buildToList
 
-simpleCaption :: Builder Block -> B.Caption
+simpleCaption :: Build Block a => a -> B.Caption
 simpleCaption = caption Nothing
 
 emptyCaption :: B.Caption
-emptyCaption = simpleCaption $ pure ()
+emptyCaption = simpleCaption ()
 
 #if MIN_VERSION_pandoc_types(1,22,1)
-simpleFigureWith :: B.Attr -> Builder Inline -> Text -> Text -> Builder Block
-simpleFigureWith attr = ((buildMany .) .) . B.simpleFigureWith attr . runToMany
+simpleFigureWith :: Build Inline a => B.Attr -> a -> Text -> Text -> Builder Block
+simpleFigureWith attr = ((buildMany .) .) . B.simpleFigureWith attr . buildToMany
 
-simpleFigure :: Builder Inline -> Text -> Text -> Builder Block
+simpleFigure :: Build Inline a => a -> Text -> Text -> Builder Block
 simpleFigure = simpleFigureWith B.nullAttr
 #endif
 
-divWith :: B.Attr -> Builder Block -> Builder Block
+divWith :: Build Block a => B.Attr -> a -> Builder Block
 divWith attr = liftWrapper $ B.Div attr
