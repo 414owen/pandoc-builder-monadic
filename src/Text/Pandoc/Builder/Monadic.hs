@@ -13,8 +13,9 @@ import Data.Text                            (Text)
 import Text.Pandoc.Builder.Monadic.Verbatim hiding
   ( simpleCell, cell, table, simpleTable
   , caption, simpleCaption, simpleFigure
-  , simpleFigureWith
+  , simpleFigureWith, tableWith
   )
+import Text.Pandoc.Builder.Monadic.Internal (tellOne, runToList)
 import Text.Pandoc.Builder.Monadic.Veneer
 
 import qualified Text.Pandoc.Builder.Monadic.Verbatim as V
@@ -28,6 +29,12 @@ cell' = V.cell
 table :: [Builder Block] -> [[Builder Block]] -> Builder Block
 table = V.simpleTable
 
+tableWith :: Attr -> [Builder Block] -> [[Builder Block]] -> Builder Block
+tableWith attr headings body =
+  case runToList $ table headings body of
+    [Table _ a b c d e] -> tellOne $ Table attr a b c d e
+    _ -> error "Invariant broken. Table builder didn't return one element."
+
 table'
   :: Caption
   -> [ColSpec]
@@ -36,6 +43,16 @@ table'
   -> TableFoot
   -> Builder Block
 table' = V.table
+
+tableWith'
+  :: Attr
+  -> Caption
+  -> [ColSpec]
+  -> TableHead
+  -> [TableBody]
+  -> TableFoot
+  -> Builder Block
+tableWith' = V.tableWith
 
 caption :: Builder Block -> Caption
 caption = V.simpleCaption
@@ -49,4 +66,3 @@ imgFigure = V.simpleFigure
 
 imgFigureWith :: Attr -> Builder Inline -> Text -> Text -> Builder Block
 imgFigureWith = V.simpleFigureWith
-
