@@ -20,6 +20,10 @@ import Text.Pandoc.Builder.Monadic.Veneer
 
 import qualified Text.Pandoc.Builder.Monadic.Verbatim as V
 
+-- These are renamed functions
+-- where Builder.simple{a} -> Builder.Monadic->{a}
+-- and Builder.{a} -> Builder.Monadic->{a}'
+
 cell :: Builder Block -> Cell
 cell = V.simpleCell
 
