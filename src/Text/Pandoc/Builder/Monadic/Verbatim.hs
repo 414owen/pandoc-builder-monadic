@@ -151,7 +151,7 @@ doubleQuoted :: Builder Inline -> Builder Inline
 doubleQuoted = liftWrapper $ B.Quoted B.DoubleQuote
 
 cite :: [B.Citation] -> Builder Inline -> Builder Inline
-cite citations = tellOne . B.Cite citations . runToList
+cite citations = liftWrapper $ B.Cite citations
 
 codeWith :: B.Attr -> Text -> Builder Inline
 codeWith = (tellOne .) . B.Code
@@ -190,10 +190,10 @@ imageWith :: B.Attr -> Text -> Text -> Builder Inline -> Builder Inline
 imageWith attr url title x = tellOne $ B.Image attr (runToList x) (url, title)
 
 note :: Builder B.Block -> Builder Inline
-note = tellOne . B.Note . runToList
+note = liftWrapper B.Note
 
 spanWith :: B.Attr -> Builder Inline -> Builder Inline
-spanWith attr = tellOne . B.Span attr . runToList
+spanWith attr = liftWrapper $ B.Span attr
 
 trimInlines :: Builder Inline -> Builder Inline
 trimInlines = buildMany . B.trimInlines . runToMany
@@ -219,7 +219,7 @@ rawBlock :: Text -> Text -> Builder Block
 rawBlock format = tellOne . B.RawBlock (B.Format format)
 
 blockQuote :: Builder Block -> Builder Block
-blockQuote = tellOne . B.BlockQuote . runToList
+blockQuote = liftWrapper B.BlockQuote
 
 orderedList :: [Builder Block] -> Builder Block
 orderedList = orderedListWith (1, B.DefaultStyle, B.DefaultDelim)
@@ -237,7 +237,7 @@ header :: Int -> Builder Inline -> Builder Block
 header = headerWith B.nullAttr
 
 headerWith :: B.Attr -> Int -> Builder Inline -> Builder Block
-headerWith attr level = tellOne . B.Header level attr . runToList
+headerWith attr level = liftWrapper $ B.Header level attr
 
 horizontalRule :: Builder Block
 horizontalRule = tellOne B.HorizontalRule
@@ -290,7 +290,7 @@ figure :: B.Caption -> Builder Block -> Builder Block
 figure = figureWith B.nullAttr
 
 figureWith :: B.Attr -> B.Caption -> Builder Block -> Builder Block
-figureWith attr capt = tellOne . B.Figure attr capt . runToList
+figureWith attr capt = liftWrapper $ B.Figure attr capt
 #endif
 
 caption :: Maybe B.ShortCaption -> Builder Block -> B.Caption
@@ -311,4 +311,4 @@ simpleFigure = simpleFigureWith B.nullAttr
 #endif
 
 divWith :: B.Attr -> Builder Block -> Builder Block
-divWith attr = tellOne . B.Div attr . runToList
+divWith attr = liftWrapper $ B.Div attr
