@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP                   #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedLists       #-}
 {-# LANGUAGE FlexibleContexts      #-}
 
 {-# OPTIONS_GHC -Wno-orphans #-}
@@ -92,26 +93,32 @@ module Text.Pandoc.Builder.Monadic.Verbatim
   ) where
 
 import Control.Arrow               ((***))
+import Data.DList                  (DList)
 import Data.Text                   (Text)
-
 import Text.Pandoc.Definition
-
 import Text.Pandoc.Builder.Monadic.Internal
   ( Builder
   , runToList
   , buildMany
+  , tell
   , tellOne
   )
 
-import qualified Text.Pandoc.Builder as B
+import qualified Data.DList          as DList
 import qualified Data.Text           as Text
-
+import qualified Text.Pandoc.Builder as B
 
 class Build el a where
   buildToList :: a -> [el]
 
+  buildToDList :: a -> DList el
+  buildToDList = DList.fromList . buildToList
+
   buildToMany :: a -> B.Many el
   buildToMany = B.fromList . buildToList
+
+  build :: a -> Builder el
+  build = tell . buildToDList
 
 instance Build a (Builder a) where
   buildToList = runToList
@@ -119,15 +126,21 @@ instance Build a (Builder a) where
 instance Build a [a] where
   buildToList = id
 
+instance Build a (DList a) where
+  buildToList = DList.toList
+  buildToDList = id
+
 instance Build a (B.Many a) where
   buildToList = B.toList
   buildToMany = id
 
 instance Build el () where
   buildToList _ = []
+  buildToDList _ = []
 
 instance Build Inline Text where
   buildToList s = [B.Str s]
+  buildToDList s = [B.Str s]
 
 instance Build Inline String where
   buildToList = buildToList . Text.pack

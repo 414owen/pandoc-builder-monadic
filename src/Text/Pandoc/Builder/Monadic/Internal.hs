@@ -7,14 +7,16 @@ module Text.Pandoc.Builder.Monadic.Internal
   , buildMany
   , runToList
   , runToMany
+  , tell
   , tellOne
   ) where
 
-import Control.Monad.Writer.Strict (Writer, execWriter, tell)
+import Control.Monad.Writer.Strict (Writer, execWriter)
 import Data.DList                  (DList)
 import Data.Foldable               (traverse_)
 import Text.Pandoc.Builder         (Inline)
 
+import qualified Control.Monad.Writer.Strict as W
 import qualified Data.DList                  as DList
 import qualified Text.Pandoc.Builder         as B
 
@@ -54,9 +56,11 @@ instance B.ToMetaValue (Builder Inline) where
 instance B.ToMetaValue (Builder Author) where
   toMetaValue = B.MetaList . map B.toMetaValue . runToList
 
-tellOne :: a -> Builder a
-tellOne = Builder . tell . pure
+tell :: DList a -> Builder a
+tell = Builder . W.tell
 
+tellOne :: a -> Builder a
+tellOne = Builder . W.tell . pure
 
 buildMany :: B.Many a -> Builder a
-buildMany = Builder . traverse_ (tell . pure)
+buildMany = Builder . traverse_ (W.tell . pure)
