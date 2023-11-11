@@ -10,15 +10,98 @@ and Builder.{a} becomes Builder.Monadic.{a}'.
 -}
 
 module Text.Pandoc.Builder.Monadic
-  ( 
-  -- * Monadic versions of functions in "Text.Pandoc.Builder"
-    module Text.Pandoc.Builder.Monadic.Verbatim
-  -- * Extra builders
-  , module Text.Pandoc.Builder.Monadic.Veneer
-  -- * Extra builders
-  , module Text.Pandoc.Builder.Monadic
+  ( module Text.Pandoc.Definition
+  , Builder
+
+  -- * Top-level
+  , doc
+  , setTitle
+  , setAuthors
+  , setDate
+  , setMeta
+
+  -- * Inline builders
+  , text
+  , str
+  , emph
+  , underline
+  , strong
+  , strikeout
+  , superscript
+  , subscript
+  , smallcaps
+  , singleQuoted
+  , doubleQuoted
+  , cite
+  , codeWith
+  , code
+  , space
+  , softbreak
+  , linebreak
+  , math
+  , displayMath
+  , rawInline
+  , link
+  , linkWith
+  , image
+  , imageWith
+  , note
+  , spanWith
+  , trimInlines
+
+  -- * Block builders
+  , h1
+  , h2
+  , h3
+  , h4
+  , h5
+
+  , para
+  , plain
+  , div'
+  , lineBlock
+  , codeBlockWith
+  , codeBlock
+  , rawBlock
+  , blockQuote
+  , bulletList
+  , orderedListWith
+  , orderedList
+  , definitionList
+  , header
+  , headerWith
+  , horizontalRule
+  , cell
+  , cell'
+  , emptyCell
+  , cellWith
+  , table
+  , table'
+  , tableWithColspec
+  , tableWith
+  , tableWith'
+#if MIN_VERSION_pandoc_types(1,23,0)
+  , figure
+  , figureWith
+#endif
+  , caption
+  , caption'
+  , emptyCaption
+#if MIN_VERSION_pandoc_types(1,22,1)
+  , imgFigure
+  , imgFigureWith
+#endif
+  , divWith
+
+  -- * Table processing
+  , normalizeTableHead
+  , normalizeTableBody
+  , normalizeTableFoot
+  , placeRowSection
+  , clipRows
   ) where
 
+import Text.Pandoc.Definition
 import Data.Text                            (Text)
 import Text.Pandoc.Builder.Monadic.Verbatim hiding
   ( simpleCell, cell, table, simpleTable

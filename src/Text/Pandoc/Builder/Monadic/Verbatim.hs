@@ -21,7 +21,7 @@ module Text.Pandoc.Builder.Monadic.Verbatim
   , setDate
   , setMeta
 
-  -- * Inline list builders
+  -- * Inline builders
   , text
   , str
   , emph
@@ -50,7 +50,7 @@ module Text.Pandoc.Builder.Monadic.Verbatim
   , spanWith
   , trimInlines
 
-  -- * Block list builders
+  -- * Block builders
   , para
   , plain
   , lineBlock
