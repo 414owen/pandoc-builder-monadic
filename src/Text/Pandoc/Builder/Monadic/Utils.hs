@@ -1,11 +1,14 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Text.Pandoc.Builder.Monadic.Utils
   ( mapBuilder
   , intersperseTableWithBlankRows
+  , vspace
   ) where
 
-import Data.List (intersperse)
-import Text.Pandoc.Builder.Monadic.Internal (Builder, tellAll, runToDList,)
-import Text.Pandoc.Builder (Block(..), TableBody(..), Row(..), nullAttr)
+import Data.List                            (intersperse)
+import Text.Pandoc.Builder.Monadic.Internal (tellAll, runToDList)
+import Text.Pandoc.Builder.Monadic.Verbatim hiding (caption)
 
 mapBuilder :: (a -> b) -> Builder a -> Builder b
 mapBuilder f = tellAll . fmap f . runToDList
@@ -27,3 +30,7 @@ intersperseTableWithBlankRows = mapBuilder updateBlock
 
     blankRow :: Row
     blankRow = Row nullAttr mempty
+
+-- | Vertical space - a paragraph containing a non-breaking space
+vspace :: Builder Block
+vspace = para "\x00A0"
