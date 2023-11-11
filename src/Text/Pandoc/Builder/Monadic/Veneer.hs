@@ -6,7 +6,8 @@ in pandoc-types' Text.Pandoc.Builder.
 module Text.Pandoc.Builder.Monadic.Veneer
   (
   -- * Block list builders
-    h1
+    div'
+  , h1
   , h2
   , h3
   , h4
@@ -16,6 +17,7 @@ module Text.Pandoc.Builder.Monadic.Veneer
 
 import Text.Pandoc.Builder.Monadic.Verbatim
   ( Builder, Inline, Block(..), ColSpec, header, simpleTable
+  , divWith, nullAttr
   )
 import Text.Pandoc.Builder.Monadic.Utils
 
@@ -50,3 +52,8 @@ tableWithColspec colspec headers rows = mapBuilder f $ simpleTable headers rows
     f (Table attr caption _ tableHead tableBodies tableFoot)
       = Table attr caption colspec tableHead tableBodies tableFoot
     f a = a
+
+-- | Build a generic block container with attributes.
+-- This would be named 'div', but that clashes with prelude's 'div'.
+div' :: Builder Block -> Builder Block
+div' = divWith nullAttr
