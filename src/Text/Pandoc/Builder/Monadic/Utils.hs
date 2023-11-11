@@ -6,7 +6,7 @@ Utility functions for working with builders, and constructed pandoc ASTs
 
 module Text.Pandoc.Builder.Monadic.Utils
   ( mapBuilder
-  , intersperseTableWithBlankRows
+  , intersperseTablesWithBlankRows
   , vspace
   ) where
 
@@ -33,8 +33,8 @@ mapBuilder f = tellAll . fmap f . runToDList
 -- clarity (with some backends) when using multiline cells.
 -- This is exposed as a modifier, because there are already
 -- too many ways to construct a table.
-intersperseTableWithBlankRows :: Builder Block -> Builder Block
-intersperseTableWithBlankRows = mapBuilder updateBlock
+intersperseTablesWithBlankRows :: Builder Block -> Builder Block
+intersperseTablesWithBlankRows = mapBuilder updateBlock
   where
     updateBlock :: Block -> Block
     updateBlock block = case block of
