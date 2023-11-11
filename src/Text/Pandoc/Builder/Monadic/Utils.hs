@@ -1,5 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+{-|
+Utility functions for working with builders, and constructed pandoc ASTs
+-}
+
 module Text.Pandoc.Builder.Monadic.Utils
   ( mapBuilder
   , intersperseTableWithBlankRows
@@ -10,11 +14,23 @@ import Data.List                            (intersperse)
 import Text.Pandoc.Builder.Monadic.Internal (tellAll, runToDList)
 import Text.Pandoc.Builder.Monadic.Verbatim hiding (caption)
 
+-- | Map every element written in a t'Builder'.
+-- This is useful if you have laid out bespoke elements, such as
+-- 
+-- > mapBuilder boldStrings $ do
+-- >   div "lorem ipsum "
+-- >   str "dolor sit amet"
+-- >
+-- > boldStrings s@(Str _) = Strong s
+-- > boldStrings a = a
+--
+-- It's also useful for creating custom pandoc builders.
+-- See 'Text.Pandoc.Builder.Monadic.Veneer.tableWithColspec'.
 mapBuilder :: (a -> b) -> Builder a -> Builder b
 mapBuilder f = tellAll . fmap f . runToDList
 
 -- | Intersperse table with blank rows, this is useful for
--- clarity (in some backends) when using multiline cells
+-- clarity (with some backends) when using multiline cells.
 intersperseTableWithBlankRows :: Builder Block -> Builder Block
 intersperseTableWithBlankRows = mapBuilder updateBlock
   where

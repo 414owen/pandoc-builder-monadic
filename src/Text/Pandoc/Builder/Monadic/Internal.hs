@@ -1,5 +1,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 
+{-|
+Internal module, exposing the Builder(..) type, you should
+prefer using 'Text.Pandoc.Builder.Monadic.Utils.mapBuilder',
+or adding something to 'Text.Pandoc.Builder.Monadic.Utils'.
+-}
+
 module Text.Pandoc.Builder.Monadic.Internal
   ( BuilderM(..)
   , Builder
@@ -19,7 +25,14 @@ import Text.Pandoc.Builder         (Inline)
 import qualified Text.Pandoc.Builder         as B
 import qualified Data.DList                  as DList
 
+-- | The pandoc element builder type. It wraps a writer monad.
+-- Chances are, you only need t'Builder' (a 'BuilderM el ()').
+-- All builders in this library have an `el` type in the set
+-- {'B.Inline', 'B.Block'}.
 newtype BuilderM el a = Builder { unBuilder :: Writer (DList el) a }
+
+-- | Specialization of 'BuilderM' without a useful return type
+type Builder el = BuilderM el ()
 
 instance Functor (BuilderM el) where
   fmap f = Builder . fmap f . unBuilder
@@ -39,30 +52,34 @@ instance Semigroup (BuilderM el a) where
 instance Monoid a => Monoid (BuilderM el a) where
   mempty = Builder $ pure mempty
 
-type Builder el = BuilderM el ()
-
-type Author = Builder Inline
-
 instance B.ToMetaValue (Builder Inline) where
   toMetaValue = B.MetaInlines . runToList
 
-instance B.ToMetaValue (Builder Author) where
+-- | Useful for setting authors
+instance B.ToMetaValue (Builder (Builder Inline)) where
   toMetaValue = B.MetaList . map B.toMetaValue . runToList
 
+-- | Get elements written in the t'Builder' as a difference list
 runToDList :: Builder el -> DList el
 runToDList = execWriter . unBuilder
 
+-- | Get elements written in the t'Builder' as a list
 runToList :: Builder el -> [el]
 runToList = DList.toList . runToDList
 
+-- | Get elements written in a t'Builder' as a 'B.Many'.
+-- This might be useful if you need to interact with pandoc-types.
 runToMany :: Builder a -> B.Many a
 runToMany = B.fromList . DList.toList . execWriter . unBuilder
 
+-- | Get pandoc-types' 'B.Many' as a t'Builder'.
 buildMany :: B.Many a -> Builder a
 buildMany = Builder . traverse_ (tell . pure)
 
+-- | Write a single element to a t'Builder'.
 tellOne :: a -> Builder a
 tellOne = Builder . tell . pure
 
+-- | Write multiple element to a t'Builder'.
 tellAll :: DList a -> Builder a
 tellAll = Builder . tell

@@ -1,5 +1,7 @@
--- | This module exports extras / convenience functions, that aren't present
--- in pandoc-types' Text.Pandoc.Builder.
+{-|
+This module exports extra convenient builders, that don't have equivalents
+in pandoc-types' Text.Pandoc.Builder.
+-}
 
 module Text.Pandoc.Builder.Monadic.Veneer
   (
@@ -17,18 +19,23 @@ import Text.Pandoc.Builder.Monadic.Verbatim
   )
 import Text.Pandoc.Builder.Monadic.Utils
 
+-- | Build a level 1 header.
 h1 :: Builder Inline -> Builder Block
 h1 = header 1
 
+-- | Build a level 2 header.
 h2 :: Builder Inline -> Builder Block
 h2 = header 2
 
+-- | Build a level 3 header.
 h3 :: Builder Inline -> Builder Block
 h3 = header 3
 
+-- | Build a level 4 header.
 h4 :: Builder Inline -> Builder Block
 h4 = header 4
 
+-- | Build a level 5 header.
 h5 :: Builder Inline -> Builder Block
 h5 = header 5
 
