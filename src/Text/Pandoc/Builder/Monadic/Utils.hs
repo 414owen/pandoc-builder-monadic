@@ -31,6 +31,8 @@ mapBuilder f = tellAll . fmap f . runToDList
 
 -- | Intersperse table with blank rows, this is useful for
 -- clarity (with some backends) when using multiline cells.
+-- This is exposed as a modifier, because there are already
+-- too many ways to construct a table.
 intersperseTableWithBlankRows :: Builder Block -> Builder Block
 intersperseTableWithBlankRows = mapBuilder updateBlock
   where
