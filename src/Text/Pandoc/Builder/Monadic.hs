@@ -1,3 +1,5 @@
+{-# LANGUAGE CPP #-}
+
 {-|
 This module exports an API similar to pandoc-types' Text.Pandoc.Builder, but
 with the `simple*` versions as the default versions, and with a few extras
@@ -20,8 +22,12 @@ module Text.Pandoc.Builder.Monadic
 import Data.Text                            (Text)
 import Text.Pandoc.Builder.Monadic.Verbatim hiding
   ( simpleCell, cell, table, simpleTable
-  , caption, simpleCaption, simpleFigure
-  , simpleFigureWith, tableWith
+  , caption, simpleCaption
+#if MIN_VERSION_pandoc_types(1,22,1)
+  , simpleFigure
+  , simpleFigureWith
+#endif
+  , tableWith
   )
 import Text.Pandoc.Builder.Monadic.Internal (tellOne, runToList)
 import Text.Pandoc.Builder.Monadic.Veneer
@@ -85,6 +91,7 @@ caption = V.simpleCaption
 caption' :: Maybe ShortCaption -> Builder Block -> Caption
 caption' = V.caption
 
+#if MIN_VERSION_pandoc_types(1,22,1)
 -- | Build a captioned figure, containing an image.
 -- This is available in pandoc-types >= 1.22.1, which corresponds to pandoc >= 2.15.
 imgFigure :: Builder Inline -> Text -> Text
@@ -95,3 +102,4 @@ imgFigure = V.simpleFigure
 -- This is available in pandoc-types >= 1.22.1, which corresponds to pandoc >= 2.15.
 imgFigureWith :: Attr -> Builder Inline -> Text -> Text -> Builder Block
 imgFigureWith = V.simpleFigureWith
+#endif
