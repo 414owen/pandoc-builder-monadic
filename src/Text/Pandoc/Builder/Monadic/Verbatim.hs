@@ -13,6 +13,9 @@
 module Text.Pandoc.Builder.Monadic.Verbatim
   ( module Text.Pandoc.Definition
   , Builder
+  , URL
+  , Title
+  , Raw
 
   -- * Top-level
   , doc
