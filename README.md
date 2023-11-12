@@ -1,5 +1,7 @@
 # pandoc-builder-monadic
 
+[![CI status badge](https://img.shields.io/github/actions/workflow/status/414owen/pandoc-builder-monadic/haskell-ci.yml)](https://github.com/414owen/pandoc-builder-monadic/actions/workflows/haskell-ci.yml)
+
 This module provides a monadic DSL for constructing Pandoc documents.
 
 ## Usage
