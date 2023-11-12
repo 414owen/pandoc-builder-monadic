@@ -34,8 +34,8 @@ module Text.Pandoc.Builder.Monadic.Verbatim
   , singleQuoted
   , doubleQuoted
   , cite
-  , codeWith
   , code
+  , codeWith
   , space
   , softbreak
   , linebreak
@@ -132,13 +132,12 @@ setAuthors = B.setAuthors . fmap runToMany
 setDate :: Builder Inline -> Pandoc -> Pandoc
 setDate = B.setDate . runToMany
 
--- | Set a value on the document's metadata.
+-- | Set a value in the document's metadata.
 setMeta :: (B.HasMeta a, B.ToMetaValue b) => Text -> b -> a -> a 
 setMeta = B.setMeta
 
--- | Convert a 'Text' to 'B.Inlines', treating interword spaces as 'B.Space's
--- or 'B.SoftBreak's.  If you want a 'B.Str' with literal spaces, use 'str'.
--- See 'B.text'.
+-- | Convert a 'Text' to a 'Builder' 'Inline', treating interword spaces as 'B.Space's
+-- or 'B.SoftBreak's. If you want a 'B.Str' with literal spaces, use 'str'.
 text :: Text -> Builder Inline
 text = buildMany . B.text
 

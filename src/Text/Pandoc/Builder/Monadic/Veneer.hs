@@ -53,7 +53,7 @@ tableWithColspec colspec headers rows = mapBuilder f $ simpleTable headers rows
       = Table attr caption colspec tableHead tableBodies tableFoot
     f a = a
 
--- | Build a generic block container with attributes.
+-- | Build a generic block container.
 -- This would be named 'div', but that clashes with prelude's 'div'.
 div' :: Builder Block -> Builder Block
 div' = divWith nullAttr

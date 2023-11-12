@@ -1,17 +1,24 @@
 {-# LANGUAGE CPP #-}
 
 {-|
-This module exports an API similar to pandoc-types' Text.Pandoc.Builder, but
+This module exports an API similar to pandoc-types' "Text.Pandoc.Builder", but
 with the `simple*` versions as the default versions, and with a few extras
 from "Text.Pandoc.Builder.Monadic.Veneer".
 
-In general, Builder.simple{a} becomes Builder.Monadic.{a}
-and Builder.{a} becomes Builder.Monadic.{a}'.
+In general, Builder.simple{a} becomes Builder.Monadic.{a} and Builder.{a}
+becomes Builder.Monadic.{a}'.
+
+If you want to match the "Text.Pandoc.Builder" API more precisely, you can use
+"Text.Pandoc.Builder.Monadic.Verbatim" instead.
 -}
 
 module Text.Pandoc.Builder.Monadic
-  ( module Text.Pandoc.Definition
-  , Builder
+  (
+  -- * Monadic element builder
+    Builder
+
+  -- * Pandoc element types
+  , module Text.Pandoc.Definition
 
   -- * Top-level
   , doc

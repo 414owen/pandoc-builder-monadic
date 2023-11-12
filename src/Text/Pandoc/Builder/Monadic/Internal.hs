@@ -31,7 +31,7 @@ import qualified Data.DList                  as DList
 -- {'B.Inline', 'B.Block'}.
 newtype BuilderM el a = Builder { unBuilder :: Writer (DList el) a }
 
--- | Specialization of 'BuilderM' without a useful return type
+-- | Pandoc element builder. Stores written pandoc elements.
 type Builder el = BuilderM el ()
 
 instance Functor (BuilderM el) where
