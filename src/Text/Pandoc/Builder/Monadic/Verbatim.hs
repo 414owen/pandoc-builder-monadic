@@ -230,8 +230,8 @@ displayMath = tellOne . B.Math B.DisplayMath
 type Raw = Text
 
 -- | Embed some of the output directly.
--- This is useful to gain access to, features of the underlying
--- output not supported directly by pandoc.
+-- This is useful to gain access to features of the underlying
+-- output which aren't supported by pandoc directly.
 rawInline :: Format -> Raw -> Builder Inline
 rawInline format = tellOne . B.RawInline format
 
@@ -289,8 +289,8 @@ codeBlockWith :: B.Attr -> Text -> Builder Block
 codeBlockWith attrs = tellOne . B.CodeBlock attrs
 
 -- | Embed some of the output directly.
--- This is useful to gain access to, features of the underlying
--- output not supported directly by pandoc.
+-- This is useful to gain access to features of the underlying
+-- output which aren't supported by pandoc directly.
 rawBlock :: Format -> Raw -> Builder Block
 rawBlock format = tellOne . B.RawBlock format
 
