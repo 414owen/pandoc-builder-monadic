@@ -9,6 +9,7 @@ maintainer:      owen@owen.cafe
 category:        Text
 build-type:      Simple
 extra-doc-files: CHANGELOG.md
+tested-with:     GHC==9.6.2, GHC==9.4.5, GHC==9.2.8, GHC==8.0.2
 
 common warnings
     ghc-options: -Wall
