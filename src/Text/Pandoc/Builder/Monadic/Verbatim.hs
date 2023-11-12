@@ -116,6 +116,14 @@ instance IsString (Builder Inline) where
 instance IsString (Builder Block) where
   fromString = plain . str . Text.pack
 
+-- | Lifts something (usually a Pandoc data constructor), into
+-- a builder which takes a builder.
+liftWrapper :: ([a] -> b) -> Builder a -> Builder b
+liftWrapper f = tellOne . f . runToList
+
+liftWrapper' :: (B.Many a -> B.Many b) -> Builder a -> Builder b
+liftWrapper' f = buildMany . f . runToMany
+
 -- | Build a pandoc document from a 'Builder' of top-level elements.
 doc :: Builder Block -> Pandoc
 doc = B.Pandoc mempty . runToList
@@ -144,11 +152,6 @@ text = buildMany . B.text
 -- | Build a string.
 str :: Text -> Builder Inline
 str = tellOne . B.Str
-
--- | Lifts something (usually a Pandoc data constructor), into
--- a builder which takes a builder.
-liftWrapper :: ([a] -> b) -> Builder a -> Builder b
-liftWrapper f = tellOne . f . runToList
 
 -- | Build an emphasized (usually italicized) inline.
 emph :: Builder Inline -> Builder Inline
@@ -258,7 +261,7 @@ spanWith attr = liftWrapper $ B.Span attr
 
 -- | Trim leading and trailing spaces and softbreaks from some inline pandoc.
 trimInlines :: Builder Inline -> Builder Inline
-trimInlines = buildMany . B.trimInlines . runToMany
+trimInlines = liftWrapper' B.trimInlines
 
 -- Block list builders
 
@@ -268,7 +271,7 @@ para = liftWrapper B.Para
 
 -- | Build some plain text (not a paragraph).
 plain :: Builder Inline -> Builder Block
-plain = buildMany . B.plain . runToMany
+plain = liftWrapper' B.plain
 
 -- | Build multiple non-breaking lines.
 lineBlock :: [Builder Inline] -> Builder Block
