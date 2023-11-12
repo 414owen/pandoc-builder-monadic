@@ -14,13 +14,16 @@ module Text.Pandoc.Builder.Monadic.Veneer
   , h4
   , h5
   , tableWithColspec
+  , strshow
   ) where
 
 import Text.Pandoc.Builder.Monadic.Verbatim
-  ( Builder, Inline, Block(..), ColSpec, header, simpleTable
-  , divWith, spanWith, nullAttr
+  ( Builder, Inline(..), Block(..), ColSpec, header, simpleTable
+  , divWith, spanWith, nullAttr, str
   )
 import Text.Pandoc.Builder.Monadic.Utils
+
+import qualified Data.Text as T
 
 -- | Build a level 1 header.
 h1 :: Builder Inline -> Builder Block
@@ -63,3 +66,7 @@ div' = divWith nullAttr
 -- This would be named 'span', but that clashes with prelude's 'span'.
 span' :: Builder Inline -> Builder Inline
 span' = spanWith nullAttr
+
+-- | Build a v'Str' using a values's `Show` instance.
+strshow :: Show a => a -> Builder Inline
+strshow = str . T.pack . show
