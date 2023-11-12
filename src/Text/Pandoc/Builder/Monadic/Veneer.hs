@@ -7,6 +7,7 @@ module Text.Pandoc.Builder.Monadic.Veneer
   (
   -- * Block list builders
     div'
+  , span'
   , h1
   , h2
   , h3
@@ -17,7 +18,7 @@ module Text.Pandoc.Builder.Monadic.Veneer
 
 import Text.Pandoc.Builder.Monadic.Verbatim
   ( Builder, Inline, Block(..), ColSpec, header, simpleTable
-  , divWith, nullAttr
+  , divWith, spanWith, nullAttr
   )
 import Text.Pandoc.Builder.Monadic.Utils
 
@@ -57,3 +58,8 @@ tableWithColspec colspec headers rows = mapBuilder f $ simpleTable headers rows
 -- This would be named 'div', but that clashes with prelude's 'div'.
 div' :: Builder Block -> Builder Block
 div' = divWith nullAttr
+
+-- | Build a generic inline container.
+-- This would be named 'span', but that clashes with prelude's 'span'.
+span' :: Builder Inline -> Builder Inline
+span' = spanWith nullAttr

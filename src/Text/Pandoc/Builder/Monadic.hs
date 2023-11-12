@@ -66,6 +66,7 @@ module Text.Pandoc.Builder.Monadic
   , para
   , plain
   , div'
+  , span'
   , lineBlock
   , codeBlockWith
   , codeBlock
