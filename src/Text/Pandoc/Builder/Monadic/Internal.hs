@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE FlexibleInstances #-}
 
 {-|
@@ -21,6 +22,9 @@ import Control.Monad.Writer.Strict (Writer, execWriter, tell)
 import Data.DList                  (DList)
 import Data.Foldable               (traverse_)
 import Text.Pandoc.Builder         (Inline)
+#if __GLASGOW_HASKELL__ < 804
+import Data.Semigroup
+#endif
 
 import qualified Text.Pandoc.Builder         as B
 import qualified Data.DList                  as DList
