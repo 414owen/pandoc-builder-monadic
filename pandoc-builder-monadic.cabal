@@ -21,7 +21,7 @@ library
                     , Text.Pandoc.Builder.Monadic.Verbatim
                     , Text.Pandoc.Builder.Monadic.Utils
                     , Text.Pandoc.Builder.Monadic.Internal
-    build-depends:    base >=4.9.2.0 && < 5
+    build-depends:    base >=4.9.0.0 && < 5
                     , containers
                     , dlist ^>= 1.0
                     , mtl
