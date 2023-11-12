@@ -1,7 +1,7 @@
 # pandoc-builder-monadic
 
 
-[![CI status badge](https://img.shields.io/github/actions/workflow/status/414owen/pandoc-builder-monadic/haskell-ci.yml)](https://github.com/414owen/pandoc-builder-monadic/actions/workflows/haskell-ci.yml) [![license](https://img.shields.io/github/license/414owen/pandoc-builder-monadic)](https://github.com/414owen/pandoc-builder-monadic/blob/master/LICENSE)
+[![CI status badge](https://img.shields.io/github/actions/workflow/status/414owen/pandoc-builder-monadic/haskell-ci.yml)](https://github.com/414owen/pandoc-builder-monadic/actions/workflows/haskell-ci.yml) [![Hackage version badge](https://img.shields.io/hackage/v/pandoc-builder-monadic)](https://hackage.haskell.org/package/pandoc-builder-monadic) [![license](https://img.shields.io/github/license/414owen/pandoc-builder-monadic)](https://github.com/414owen/pandoc-builder-monadic/blob/master/LICENSE)
 
 This library provides a monadic DSL for constructing Pandoc documents.
 
