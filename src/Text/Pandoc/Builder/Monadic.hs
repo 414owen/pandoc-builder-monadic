@@ -40,8 +40,8 @@ module Text.Pandoc.Builder.Monadic
   , singleQuoted
   , doubleQuoted
   , cite
-  , codeWith
   , code
+  , codeWith
   , space
   , softbreak
   , linebreak
