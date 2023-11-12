@@ -113,6 +113,15 @@ import Text.Pandoc.Builder.Monadic.Internal
 import qualified Data.Text           as Text
 import qualified Text.Pandoc.Builder as B
 
+-- | Type alias for raw output.
+type Raw = Text
+
+-- | Type alias for URLs.
+type URL = Text
+
+-- | Type alias for Titles.
+type Title = Text
+
 instance IsString (Builder Inline) where
   fromString = str . Text.pack
 
@@ -227,16 +236,11 @@ math = tellOne . B.Math B.InlineMath
 displayMath :: Text -> Builder Inline
 displayMath = tellOne . B.Math B.DisplayMath
 
-type Raw = Text
-
 -- | Embed some of the output directly.
 -- This is useful to gain access to features of the underlying
 -- output which aren't supported by pandoc directly.
 rawInline :: Format -> Raw -> Builder Inline
 rawInline format = tellOne . B.RawInline format
-
-type URL = Text
-type Title = Text
 
 -- | Build a link from a URL, a title, and some inline pandoc.
 link :: URL -> Title -> Builder Inline -> Builder Inline
