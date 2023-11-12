@@ -78,7 +78,7 @@ buildMany = Builder . traverse_ (tell . pure)
 
 -- | Write a single element to a t'Builder'.
 tellOne :: a -> Builder a
-tellOne = Builder . tell . pure
+tellOne = Builder . tell . DList.singleton
 
 -- | Write multiple element to a t'Builder'.
 tellAll :: DList a -> Builder a
