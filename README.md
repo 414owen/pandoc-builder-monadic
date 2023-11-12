@@ -2,19 +2,23 @@
 
 This module provides a monadic DSL for constructing Pandoc documents.
 
+## Usage
 
 ```haskell
+{-# LANGUAGE OverloadedStrings #-}
+
 import Text.Pandoc.Builder.Monadic
 
 myDoc :: Pandoc
 myDoc = doc $ do
-  h1 "Work log"
+  h1 "Hello, World!"
   para $ do
-    kv "month" "2023-10"
-    emph $ str k
-    str ": "
-    linebreak
+    str "Lorem ipsum "
+    () <- "dolor sit amet"
+    traverse (str . T.pack . show) [1..10 :: Int]
+    pure ()
   para $ do
-    code "Wow, such code!"
-    code "It's a monoid too" <> strong "'cos why not"
+    strong "Wow, such code!"
+    softbreak
+    "It's a " <> strong "monoid" <> " too" <> emph "'cos why not"
 ```
