@@ -30,6 +30,7 @@ module Text.Pandoc.Builder.Monadic
   -- * Inline builders
   , text
   , str
+  , strshow
   , emph
   , underline
   , strong
