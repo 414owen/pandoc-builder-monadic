@@ -1,6 +1,7 @@
 cabal-version:   2.2
 name:            pandoc-builder-monadic
 version:         0.1.0
+synopsis:        A monadic DSL for building pandoc documents
 homepage:        https://github.com/414owen/pandoc-builder-monadic
 license:         BSD-3-Clause
 license-file:    LICENSE
