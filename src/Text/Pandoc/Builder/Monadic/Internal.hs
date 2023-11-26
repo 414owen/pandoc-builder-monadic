@@ -55,6 +55,12 @@ instance Semigroup (BuilderM el a) where
 
 instance Monoid a => Monoid (BuilderM el a) where
   mempty = Builder $ pure mempty
+#if !(MIN_VERSION_base(4,11,0))
+  mappend f g = do
+    a <- f
+    b <- g
+    pure (mappend a b)
+#endif
 
 instance B.ToMetaValue (Builder Inline) where
   toMetaValue = B.MetaInlines . runToList

@@ -1,5 +1,9 @@
 # Revision history for pandoc-builder-monadic
 
+## 1.1.1
+
+* Fix GHC 8.2.x support by introducing some CPP
+
 ## 1.1.0
 
 * Support GHC 8.0.2 onwards
