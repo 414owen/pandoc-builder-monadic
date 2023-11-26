@@ -14,7 +14,16 @@ maintainer:      owen@owen.cafe
 category:        Text
 build-type:      Simple
 extra-source-files: README.md CHANGELOG.md
-tested-with:     GHC==9.6.2, GHC==9.4.5, GHC==9.2.8, GHC==8.0.2
+tested-with:        GHC==9.6.2
+                  , GHC==9.4.5
+                  , GHC==9.2.8
+                  , GHC==9.0.2
+                  , GHC==8.10.7
+                  , GHC==8.8.4
+                  , GHC==8.6.5
+                  , GHC==8.4.4
+                  , GHC==8.2.2
+                  , GHC==8.0.2
 
 common warnings
     ghc-options: -Wall -Wextra -Wunused-packages
